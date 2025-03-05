@@ -15,6 +15,8 @@ on:
 jobs:
   download:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 允许创建 Releases 和上传文件
     steps:
     - name: Checkout
       uses: actions/checkout@v4
