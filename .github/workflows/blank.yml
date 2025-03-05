@@ -26,10 +26,11 @@ jobs:
         echo "✅ 文件下载完成"
 
     - name: Upload to Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2.1.0
       with:
         files: custom-file.zip
         tag_name: ${{ github.event.inputs.tag_name }}
         name: "动态下载的 Release"
+        token: ${{ secrets.GITHUB_TOKEN }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
