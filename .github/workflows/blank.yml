@@ -1,32 +1,35 @@
-name: Download File and Release
+name: Dynamic Download and Release
 
 on:
-  workflow_dispatch:  # 手动触发
-  push:
-    tags:
-      - "v*"  # 通过 tag 触发（可选）
+  workflow_dispatch:
+    inputs:
+      file_url:
+        description: "要下载的文件 URL"
+        required: true
+        type: string
+      tag_name:
+        description: "Release 标签（例如 v1.0.0）"
+        required: true
+        type: string
 
 jobs:
-  download-and-release:
+  download:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
 
     - name: Download File
       run: |
-        # 使用代理或镜像（可选）
-        # 例如替换域名：将 fastly.net 替换为国内可访问的镜像
-        # curl -L -o nexus.zip "https://sonatype-download.example-mirror.com/.../nexus-3.78.0-14-win64.zip"
-        
-        # 直接下载（如果 GitHub Actions 服务器可访问）
-        curl -L -o nexus.zip "https://sonatype-download.global.ssl.fastly.net/repository/downloads-prod-group/3/nexus-3.78.0-14-win64.zip"
+        # 从输入框获取 URL 并下载
+        curl -L -o custom-file.zip "${{ github.event.inputs.file_url }}"
+        echo "✅ 文件下载完成"
 
-    - name: Create Release and Upload Asset
+    - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: nexus.zip  # 上传的文件名
-        tag_name: v1.0.0  # Release 的标签（可动态生成）
-        name: "Nexus Release"
+        files: custom-file.zip
+        tag_name: ${{ github.event.inputs.tag_name }}
+        name: "动态下载的 Release"
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 自动生成的权限 Token
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
